@@ -11,11 +11,16 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +32,9 @@ class BookingTransactionResource extends Resource
 {
     protected static ?string $model = BookingTransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Transactions';
+
+    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 
     public static function form(Form $form): Form
     {
@@ -51,20 +58,27 @@ class BookingTransactionResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('trx_id')->sortable()->searchable(),
+                TextColumn::make('carStore.name')->sortable()->searchable()->label('Car Store'),
+                TextColumn::make('trx_id')->sortable()->searchable()->label('Trx ID')->searchable(isIndividual: true),
                 TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('phone_number')->sortable()->searchable(),
+                TextColumn::make('phone_number')->sortable()->searchable()->searchable(isIndividual: true),
                 TextColumn::make('carService.name'),
                 TextColumn::make('started_at'),
                 TextColumn::make('time_at'),
-                IconColumn::make('is_paid')->boolean()->trueColor('success')->falseColor('danger')->trueIcon('heroicon-o-check-circle')->falseIcon('heroicon-o-x-circle')->label('Sudah Bayar ?'),
-                ImageColumn::make('proof'),
+                IconColumn::make('is_paid')->boolean()->trueColor('success')->falseColor('danger')->trueIcon('heroicon-o-check-circle')->falseIcon('heroicon-o-x-circle')->label('Bayar'),
+                // ImageColumn::make('proof'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])->button()
+                    ->label('Actions'),
+                // ...
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
