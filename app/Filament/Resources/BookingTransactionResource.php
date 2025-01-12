@@ -24,6 +24,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,7 +35,7 @@ class BookingTransactionResource extends Resource
 
     protected static ?string $navigationGroup = 'Transactions';
 
-    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
+    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
     public static function form(Form $form): Form
     {
@@ -58,18 +59,18 @@ class BookingTransactionResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('carStore.name')->sortable()->searchable()->label('Car Store'),
+                // TextColumn::make('carStore.name')->sortable()->searchable()->label('Car Store'),
                 TextColumn::make('trx_id')->sortable()->searchable()->label('Trx ID')->searchable(isIndividual: true),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('phone_number')->sortable()->searchable()->searchable(isIndividual: true),
                 TextColumn::make('carService.name'),
-                TextColumn::make('started_at'),
-                TextColumn::make('time_at'),
+                TextColumn::make('started_at')->description(fn(BookingTransaction $record): string => $record->time_at),
+                //TextColumn::make('time_at'),
                 IconColumn::make('is_paid')->boolean()->trueColor('success')->falseColor('danger')->trueIcon('heroicon-o-check-circle')->falseIcon('heroicon-o-x-circle')->label('Bayar'),
                 // ImageColumn::make('proof'),
             ])
             ->filters([
-                //
+                SelectFilter::make('car_store_id')->relationship('carStore', 'name')->label('Car Store'),
             ])
             ->actions([
                 ActionGroup::make([
